@@ -44,6 +44,8 @@ trait Dependencies {
     val `azure-identity` = "com.azure" % "azure-identity" % azureIdentityVersion
     val `aws-secrets-manager` =
       "com.amazonaws" % "aws-java-sdk-secretsmanager" % awsSecretsVersion
+    val `aws-sts` =
+      "com.amazonaws" % "aws-java-sdk-sts" % awsSecretsVersion
 
     val `mockito` = "org.scalatestplus" %% "mockito-4-6" % mockitoVersion
     val `scalatest` = "org.scalatest" %% "scalatest" % scalaTestVersion
@@ -69,6 +71,7 @@ trait Dependencies {
     `azure-key-vault`,
     `azure-identity` exclude ("javax.activation", "activation"),
     `aws-secrets-manager`,
+    `aws-sts`,
     `scalaCollectionCompat`,
     `jakartaServlet` % Test,
     `mockito` % Test,

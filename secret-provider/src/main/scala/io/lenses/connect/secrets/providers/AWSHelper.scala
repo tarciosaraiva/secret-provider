@@ -110,36 +110,40 @@ trait AWSHelper extends StrictLogging {
       client.getSecretValue(new GetSecretValueRequest().withSecretId(secretId))
     ) match {
       case Success(secret) =>
-        val value =
-          new ObjectMapper()
-            .readValue(
-              secret.getSecretString,
-              classOf[java.util.HashMap[String, String]]
-            )
-            .asScala
-            .getOrElse(
-              key,
-              throw new ConnectException(
-                s"Failed to look up key [$key] in secret [${secret.getName}]. key not found"
+        if (key.trim().isEmpty()) {
+          (secret.getSecretString, getTTL(client, secretId))
+        } else {
+          val value =
+            new ObjectMapper()
+              .readValue(
+                secret.getSecretString,
+                classOf[java.util.HashMap[String, String]]
               )
-            )
+              .asScala
+              .getOrElse(
+                key,
+                throw new ConnectException(
+                  s"Failed to look up key [$key] in secret [${secret.getName}]. key not found"
+                )
+              )
 
-        val fileWriter: FileWriter = new FileWriterOnce(
-          Paths.get(rootDir, secretId)
-        )
-        // decode the value
-        val encodingAndId = EncodingAndId.from(key)
-        (
-          decodeKey(
-            key = key,
-            value = value,
-            encoding = encodingAndId.encoding,
-            writeFileFn = content => {
-              fileWriter.write(key.toLowerCase, content, key).toString
-            }
-          ),
-          getTTL(client, secretId)
-        )
+          val fileWriter: FileWriter = new FileWriterOnce(
+            Paths.get(rootDir, secretId)
+          )
+          // decode the value
+          val encodingAndId = EncodingAndId.from(key)
+          (
+            decodeKey(
+              key = key,
+              value = value,
+              encoding = encodingAndId.encoding,
+              writeFileFn = content => {
+                fileWriter.write(key.toLowerCase, content, key).toString
+              }
+            ),
+            getTTL(client, secretId)
+          )
+        }
 
       case Failure(exception) =>
         throw new ConnectException(
