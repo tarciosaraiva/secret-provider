@@ -5,7 +5,7 @@
 import sbt.Keys._
 import sbt.{Def, _}
 import sbtassembly.AssemblyKeys._
-import sbtassembly.MergeStrategy
+import sbtassembly.{MergeStrategy, PathList}
 
 object Settings extends Dependencies {
 
@@ -77,6 +77,8 @@ object Settings extends Dependencies {
         },
         assembly / assemblyMergeStrategy := {
           case "module-info.class" => MergeStrategy.discard
+          case PathList("module-info.class") => MergeStrategy.discard
+          case PathList("META-INF", "versions", xs@_, "module-info.class") => MergeStrategy.discard
           case x if x.contains("io.netty.versions.properties") =>
             MergeStrategy.concat
           case x =>

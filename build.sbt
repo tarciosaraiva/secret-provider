@@ -7,7 +7,6 @@ name := "secret-provider"
 javacOptions ++= Seq("--release", "11")
 javaOptions ++= Seq("-Xms512M", "-Xmx2048M")
 
-
 lazy val subProjects: Seq[Project] = Seq(
   `secret-provider`
 )
@@ -32,7 +31,7 @@ lazy val `secret-provider` = (project in file("secret-provider"))
         description := "Kafka Connect compatible connectors to move data between Kafka and popular data stores",
         publish / skip := true,
         libraryDependencies ++= secretProviderDeps,
-      ),
+      )
   )
   .configureAssembly()
 
